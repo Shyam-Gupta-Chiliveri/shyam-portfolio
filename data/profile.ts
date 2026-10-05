@@ -5,7 +5,7 @@ export const profile = {
   title: "Data Scientist / AI Engineer",
   titleLines: ["Data Scientist", "AI Engineer"],
   headline: "Data Scientist · AI Engineer · Agentic AI · GenAI",
-  tagline: "I turn complex problems into decisions you can ship.",
+  tagline: "I bridge the gap between science and artificial intelligence.",
   /** Hero one-liner — from the resume summary. */
   intro:
     "Specialised in Agentic AI, RAG, time-series forecasting (LSTM, XGBoost) and deep learning. Production-ready in Python, PyTorch and LangChain.",
