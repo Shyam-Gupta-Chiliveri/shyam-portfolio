@@ -27,7 +27,7 @@ export const profile = {
   /** About section — mindset, approach, results. */
   about: [
     "I'm a Data Scientist and AI Engineer. I start from the decision someone has to make, not from the model. I have an M.Sc. in Materials Technology from TU Bergakademie Freiberg, I am training at WBS Coding School, and I have 7+ years across ML pipelines, agentic AI, RAG and semantic digital twins, including project work for BMW, Tesla and Daimler. That is where science, data and production actually meet.",
-    "The way I work is straightforward. I frame the problem, decide what can be measured, then build the smallest thing that answers it. Sometimes that is a RAG system over ISO/DIN standards, sometimes a time-series forecast on plant data, sometimes a digital twin of a fracture surface. I work in Python, PyTorch and LangChain, and I stay close to the people who will use the result. Iterate, test, ship.",
+    "My approach is simple. I frame the problem, decide what can be measured, then build the smallest thing that answers it. Sometimes that is a RAG system over ISO/DIN standards, sometimes a time-series forecast on plant data, sometimes a digital twin of a fracture surface. I work in Python, PyTorch and LangChain, and I stay close to the people who will use the result. Iterate, test, ship.",
     "I want results someone can act on: a clear cause, a next step, something an engineer or a CEO can take into a meeting. A critic agent on a case, SHAP on a materials model, a live dashboard instead of a slide. I'm open to Data Scientist, AI Engineer, GenAI or Data Analyst roles in Germany or remote.",
   ],
 
