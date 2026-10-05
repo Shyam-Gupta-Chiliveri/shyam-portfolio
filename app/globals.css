@@ -1,0 +1,137 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --color-ink: #111111;
+  --color-body: #4b5563;
+  --color-muted: #8a8f98;
+  --color-line: #e8e8ea;
+  --color-paper: #fafafa;
+  --color-wine: #7a2a3a;
+  --color-wine-soft: #f6eef0;
+}
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 4.5rem;
+}
+
+body {
+  @apply bg-white text-ink antialiased;
+  overflow-x: hidden;
+  font-feature-settings: "cv11", "ss01";
+}
+
+::selection {
+  background: rgba(122, 42, 58, 0.18);
+}
+
+/* ---------- utilities ---------- */
+.glass {
+  @apply border border-white/30 bg-white/10 backdrop-blur-md;
+}
+
+.eyebrow {
+  @apply text-[11px] font-medium uppercase tracking-[0.22em] text-wine;
+}
+
+.card {
+  @apply rounded-[22px] border border-line bg-white;
+  box-shadow:
+    0 1px 2px rgba(17, 17, 17, 0.03),
+    0 18px 40px -20px rgba(17, 17, 17, 0.12);
+}
+
+.pill {
+  @apply inline-flex items-center rounded-full border border-line bg-white px-2.5 py-1 text-[12px] leading-none text-body;
+}
+
+/* soft wine glow used behind the contact section, like the reference */
+.glow {
+  background:
+    radial-gradient(60% 50% at 20% 100%, rgba(122, 42, 58, 0.08), transparent 70%),
+    radial-gradient(50% 40% at 100% 90%, rgba(122, 42, 58, 0.06), transparent 70%);
+}
+
+/* ---------- scroll reveal ---------- */
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+.reveal.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------- hero ---------- */
+@keyframes hero-enter {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.hero-enter {
+  animation: hero-enter 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes caption-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+.caption-enter {
+  animation: caption-enter 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ---------- timeline ---------- */
+.timeline {
+  @apply relative;
+}
+.timeline::before {
+  content: "";
+  @apply absolute top-3 bottom-0 left-[5px] w-px bg-wine/20;
+}
+.timeline-dot {
+  @apply absolute top-[9px] left-0 h-[11px] w-[11px] rounded-full bg-wine ring-4 ring-white;
+}
+
+/* ---------- reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .hero-enter,
+  .caption-enter,
+  .animate-pulse {
+    animation: none !important;
+  }
+  * {
+    transition-duration: 0.01ms !important;
+  }
+}
