@@ -98,7 +98,7 @@ export default function Projects() {
       id="projects"
       eyebrow="Projects"
       title="Case studies."
-      sub="Agentic AI, GenAI, deep learning, ML and analytics — complete end-to-end work."
+      sub="Agentic AI, GenAI, deep learning, ML and analytics. Complete end-to-end work."
     >
       <Reveal className="mb-10 flex flex-wrap gap-2" role="tablist" aria-label="Filter projects by category">
         {(["All", ...categories] as Filter[]).map((c) => {

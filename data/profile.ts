@@ -8,7 +8,7 @@ export const profile = {
   tagline: "I turn complex problems into decisions you can ship.",
   /** Hero one-liner — from the resume summary. */
   intro:
-    "Specialised in Agentic AI, RAG, time-series forecasting (LSTM, XGBoost) and deep learning — production-ready in Python, PyTorch and LangChain.",
+    "Specialised in Agentic AI, RAG, time-series forecasting (LSTM, XGBoost) and deep learning. Production-ready in Python, PyTorch and LangChain.",
   description:
     "Data Scientist & AI Engineer specialising in Agentic AI, RAG, LLM agents, semantic digital twins, time-series forecasting and deep learning. 7+ years of experience with project work for BMW, Tesla and Daimler. Open to Data Science, AI Engineering, GenAI and Data Analyst roles.",
   status: "Open to new roles",
