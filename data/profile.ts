@@ -21,7 +21,7 @@ export const profile = {
   githubHandle: "Shyam-Gupta-Chiliveri",
   linkedin: "https://linkedin.com/in/shyam-sunder-chiliveri-890153167/",
   linkedinHandle: "shyam-sunder-chiliveri",
-  website: "shyam-gupta-chiliveri.github.io",
+  website: "shyam-portfolio-ruby.vercel.app",
   resume: "/resume.pdf",
 
   /** About section — one paragraph from the resume. */

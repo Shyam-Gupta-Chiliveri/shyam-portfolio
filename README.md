@@ -1,6 +1,14 @@
 # Shyam Sunder Chiliveri — Portfolio
 
-Personal portfolio built with **Next.js 15 (App Router)**, **TypeScript** and **Tailwind CSS v4**. Fully static, deploys to Vercel with zero config.
+**Live site:** [https://shyam-portfolio-ruby.vercel.app](https://shyam-portfolio-ruby.vercel.app)
+
+Personal portfolio built with **Next.js 15 (App Router)**, **TypeScript** and **Tailwind CSS v4**. Deployed on **Vercel** from this GitHub repo.
+
+| | |
+| --- | --- |
+| Website | [shyam-portfolio-ruby.vercel.app](https://shyam-portfolio-ruby.vercel.app) |
+| GitHub | [Shyam-Gupta-Chiliveri/shyam-portfolio](https://github.com/Shyam-Gupta-Chiliveri/shyam-portfolio) |
+| Hosting | Vercel (production, auto-deploys from `main`) |
 
 ## Run locally
 
@@ -12,14 +20,15 @@ npm run build && npm start
 
 ## Deploy to Vercel
 
-1. Push this folder to a Git repository and import it in Vercel (framework preset: Next.js).
-2. In **Project → Settings → Environment Variables** add
+This project is already live on Vercel. Pushing to `main` updates production.
 
-   ```
-   NEXT_PUBLIC_SITE_URL = https://your-domain.com
-   ```
+Optional: in **Project → Settings → Environment Variables** set
 
-   This is used for `metadataBase`, Open Graph / Twitter tags, `sitemap.xml` and `robots.txt`. If it is not set, the site falls back to Vercel's production URL, then to `https://shyam-gupta-chiliveri.github.io` — never `localhost`.
+```
+NEXT_PUBLIC_SITE_URL = https://shyam-portfolio-ruby.vercel.app
+```
+
+This is used for `metadataBase`, Open Graph / Twitter tags, `sitemap.xml` and `robots.txt`. If it is not set, the site falls back to Vercel’s production URL, then to `https://shyam-portfolio-ruby.vercel.app` — never `localhost`.
 
 ## Content
 
