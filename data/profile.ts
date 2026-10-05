@@ -5,7 +5,7 @@ export const profile = {
   title: "Data Scientist / AI Engineer",
   titleLines: ["Data Scientist", "AI Engineer"],
   headline: "Data Scientist · AI Engineer · Agentic AI · GenAI",
-  tagline: "I bridge the gap between science and artificial intelligence.",
+  tagline: "I turn complex problems into decisions you can ship.",
   /** Hero one-liner — from the resume summary. */
   intro:
     "Specialised in Agentic AI, RAG, time-series forecasting (LSTM, XGBoost) and deep learning — production-ready in Python, PyTorch and LangChain.",
@@ -24,9 +24,11 @@ export const profile = {
   website: "shyam-portfolio-ruby.vercel.app",
   resume: "/resume.pdf",
 
-  /** About section — one paragraph from the resume. */
+  /** About section — mindset, approach, results. */
   about: [
-    "I'm a Data Scientist and AI Engineer — student at WBS Coding School with an M.Sc. in Materials Technology from TU Bergakademie Freiberg and 7+ years across ML pipelines, agentic AI, RAG and semantic digital twins, including project work for BMW, Tesla and Daimler. I specialise in Agentic AI, RAG, time-series forecasting (LSTM, XGBoost) and deep learning, production-ready in Python, PyTorch and LangChain, and I'm open to Data Scientist, AI Engineer, GenAI or Data Analyst roles in Germany or remote.",
+    "I'm a Data Scientist and AI Engineer. I don't start from the model — I start from the decision someone has to make. With an M.Sc. in Materials Technology from TU Bergakademie Freiberg, training at WBS Coding School, and 7+ years across ML pipelines, agentic AI, RAG and semantic digital twins — including work for BMW, Tesla and Daimler — I sit where science, data and production actually meet.",
+    "My approach is simple: frame the problem, cut it to what is measurable, then build the smallest path to an answer. That might be a multi-agent RAG desk over ISO/DIN standards, a time-series forecast on plant data, or a digital twin of a fracture surface. I work in Python, PyTorch and LangChain, and I stay next to the people who will use the result — iterate, test, ship.",
+    "I care about results you can trust: one clear cause, a next action, something an engineer or a CEO can act on. I look for the unusual cut — a critic agent on a case, SHAP on a materials model, a live dashboard instead of a slide — so the work is both rigorous and usable. Open to Data Scientist, AI Engineer, GenAI or Data Analyst roles in Germany or remote.",
   ],
 
   softSkills: [
