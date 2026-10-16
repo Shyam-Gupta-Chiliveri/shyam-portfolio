@@ -15,6 +15,11 @@ function Links({ p }: { p: Project }) {
           Live demo →
         </a>
       )}
+      {p.extraLinks?.map((l) => (
+        <a key={l.href} href={l.href} target="_blank" rel="noopener noreferrer" className="text-[13px] font-medium text-wine hover:underline">
+          {l.label} →
+        </a>
+      ))}
       {p.github && (
         <a href={p.github} target="_blank" rel="noopener noreferrer" className="text-[13px] font-medium text-wine hover:underline">
           GitHub →

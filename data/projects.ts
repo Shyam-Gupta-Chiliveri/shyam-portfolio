@@ -11,12 +11,74 @@ export type Project = {
   stack: string[];
   github?: string;
   demo?: string;
+  extraLinks?: { label: string; href: string }[];
   badge?: "Live" | "Flagship";
   /** Present only for the detailed case studies. */
   caseStudy?: { problem: string; approach: string; result: string };
 };
 
 export const projects: Project[] = [
+  {
+    slug: "transfer-pricing-copilot",
+    title: "Transfer Pricing Copilot",
+    subtitle: "Agentic AI for OECD transfer-pricing retrieval and TNMM testing",
+    category: "Agentic AI",
+    badge: "Live",
+    summary:
+      "Portfolio desk that walks a controlled group from function to file: characterisation, method choice, comparable screening, the statutory range, a transaction matrix, and a critic that keeps a paragraph off the page unless it was retrieved. Docker app with English and German. Not tax advice and not a client engagement.",
+    metrics: ["45/45 citation accuracy", "94% screening F1", "612 ledger bookings", "Live desk"],
+    stack: ["Python", "RAG", "TF-IDF", "Logistic Regression", "Streamlit", "Docker", "pytest"],
+    github: "https://github.com/Shyam-Gupta-Chiliveri/transfer-pricing-copilot",
+    demo: "https://shyam-gupta-chiliveri.github.io/transfer-pricing-copilot/",
+    caseStudy: {
+      problem:
+        "Transfer-pricing files mix OECD guidelines, screening of comparables, and a margin test. The question is which paragraph was actually retrieved, and whether the tested party sits inside the range.",
+      approach:
+        "A router sends each question to guideline RAG, a knowledge graph, company screening, a TNMM margin test and a FAR characterisation. A critic checks that every citation was retrieved. The worked example is the fictional hardening group Härtetechnik AG.",
+      result:
+        "Top-3 citation accuracy 45/45 on the published question set. Company screening F1 about 94%. Public page plus an interactive Docker desk.",
+    },
+  },
+  {
+    slug: "agentic-ai-security-toolchain",
+    title: "Agentic AI Security Toolchain",
+    subtitle: "SAST, critic and CWE mapping on Open-SAE-J1939",
+    category: "Agentic AI",
+    badge: "Live",
+    summary:
+      "Agentic security desk on the public MIT-licensed Open-SAE-J1939 C stack. Router plus Semgrep, builtin C checkers, optional CodeQL SARIF, AFL++ crashes, an LLM reviewer and a critic that maps findings to CWEs. Research portfolio, not a full ISO/SAE 21434 CSMS.",
+    metrics: ["4 critic-kept findings", "CWE-787 and CWE-190", "Open-SAE-J1939", "Live desk"],
+    stack: ["Python", "Semgrep", "CodeQL", "AFL++", "CWE RAG", "Docker", "Streamlit"],
+    github: "https://github.com/Shyam-Gupta-Chiliveri/Agentic-AI-Security-Toolchain",
+    demo: "https://shyam-gupta-chiliveri.github.io/Agentic-AI-Security-Toolchain/",
+    caseStudy: {
+      problem:
+        "Embedded CAN code can hide integer wrap and out-of-bounds writes that a reviewer will miss in a long C file. The desk has to show a real finding, a CWE, and a suggested bound, without claiming to be an OEM cybersecurity programme.",
+      approach:
+        "Same shape as the materials case desk: router chooses specialists, tools return facts, critic last. Target is Open-SAE-J1939 (about 33 .c files). The public page replays the first SAST scan so a recruiter can open the board without Docker.",
+      result:
+        "First builtin SAST run: 4 raw hits kept by the critic, including TP.DT index wrap (CWE-190) and a write past MAX_TP_DT (CWE-787). Live GitHub Pages desk, Docker rescan on a clone.",
+    },
+  },
+  {
+    slug: "beehaven-azure-pipeline",
+    title: "Bee Haven Azure Pipeline",
+    subtitle: "Medallion lakehouse on Azure Data Factory and Synapse",
+    category: "Data Analytics",
+    summary:
+      "End-to-end Medallion lakehouse (Bronze, Silver, Gold) on Azure for 2.5 years of beehive sensor data, enriched with BrightSky weather. Azure Data Factory orchestrates 14 activities on a nightly trigger. Synapse Spark notebooks clean, join and aggregate to analysis-ready Parquet tables in Germany West Central.",
+    metrics: ["2.5M flow rows", "14 ADF activities succeeded", "Bronze to Gold", "Germany West Central"],
+    stack: ["Azure Data Factory", "Azure Synapse", "ADLS Gen2", "Spark", "Parquet", "Python", "pandas"],
+    github: "https://github.com/Shyam-Gupta-Chiliveri/beehaven-azure-data-pipeline",
+    caseStudy: {
+      problem:
+        "What makes bees busy? Hive flow, temperature, humidity and weight sit in messy CSVs, in German local time, with stacked series and sensor sign errors. They need to meet hourly weather before anyone can answer the business question.",
+      approach:
+        "Source CSVs copy into bronze, archive with timestamps, then Synapse notebooks validate and write Parquet to silver. A second notebook joins weather and builds hourly, daily and insight tables in gold. If a quality check fails, the pipeline stops and files stay in processing.",
+      result:
+        "Full Data Factory run succeeded (14 activities). Data from January 2017 to May 2019, hive in Bad Schwartau. ARM template of the factory is in the repo.",
+    },
+  },
   {
     slug: "materials-intelligence",
     title: "Materials Intelligence",
@@ -29,6 +91,11 @@ export const projects: Project[] = [
     stack: ["LangChain", "FAISS", "Knowledge Graph", "Docker", "AWS ECS Fargate", "CloudFront", "Secrets Manager", "Streamlit", "pytest CI/CD"],
     github: "https://github.com/Shyam-Gupta-Chiliveri/Agentic-AI__Materials-Intelligence-MI-",
     demo: "https://shyam-gupta-chiliveri.github.io/materials-intelligence/",
+    extraLinks: [
+      { label: "Case desk", href: "https://138.2.179.154.sslip.io" },
+      { label: "SEM classifier", href: "https://sem.138.2.179.154.sslip.io" },
+      { label: "RAG desk", href: "https://rag.138.2.179.154.sslip.io" },
+    ],
     caseStudy: {
       problem:
         "Materials engineers need a traceable failure analysis for hardened steel axles: classify SEM fracture images, retrieve the relevant ISO/DIN standards, and estimate fracture risk from plant motor-load data on 4Cr13 axle steel.",
@@ -165,6 +232,31 @@ export const projects: Project[] = [
     metrics: ["Multimodal AI", "Knowledge Graphs", "Ontology-driven"],
     stack: ["Python", "Knowledge Graphs", "Ontologies", "LLM", "PyTorch"],
     github: "https://github.com/Shyam-Gupta-Chiliveri/AI-based-material-analysis-system-with-multimodal-learning",
+    demo: "https://sem.138.2.179.154.sslip.io",
+    extraLinks: [{ label: "RAG desk", href: "https://rag.138.2.179.154.sslip.io" }],
+  },
+  {
+    slug: "materials-intelligence-platform",
+    title: "Materials Intelligence Platform",
+    subtitle: "Grafana plant board on Kubernetes, Oracle Always Free",
+    category: "Engineering",
+    summary:
+      "Operations board for the three public materials apps. Prometheus probes each HTTPS address every 15 seconds. Grafana shows in-service or offline, answer time, certificate days left, disk, uptime, CPU and RAM on a 24 GB Frankfurt Ampere VM. Cost: €0.",
+    metrics: ["k3s + Prometheus", "Oracle Always Free", "Frankfurt", "Live Grafana"],
+    stack: ["Grafana", "Prometheus", "Kubernetes", "k3s", "Terraform", "Oracle Cloud"],
+    github: "https://github.com/Shyam-Gupta-Chiliveri/Materials-Intelligence-Platform",
+    demo: "https://grafana.138.2.179.154.sslip.io/d/mi-platform/materials-intelligence-platform",
+  },
+  {
+    slug: "lianes-library",
+    title: "Liane's Library",
+    subtitle: "Personal library system with MySQL, Streamlit and Docker",
+    category: "Engineering",
+    summary:
+      "Book tracking, friend management, loan tracking with automatic fines, trust scores, wishlist and reviews. Six normalised MySQL tables, SQLAlchemy, Streamlit UI, Docker Compose. Trust score starts at 100 and drops for late or damaged returns. Fines calculate live at £0.50 per day overdue.",
+    metrics: ["6 MySQL tables", "Live fine calculation", "Docker Compose"],
+    stack: ["Python", "MySQL", "SQLAlchemy", "Streamlit", "Docker"],
+    github: "https://github.com/Shyam-Gupta-Chiliveri/Liane-s-Library-Management-System",
   },
   {
     slug: "vikings-oop",
