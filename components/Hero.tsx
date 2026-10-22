@@ -333,11 +333,12 @@ export default function Hero({ counts }: { counts: FrameCounts }) {
                   </a>
                   <a
                     href={profile.resume}
-                    download
+                    target="_blank"
+                    rel="noopener noreferrer"
                     onClick={stop}
                     className="glass rounded-full px-6 py-3 text-sm font-medium text-white transition hover:bg-white/20"
                   >
-                    Download Resume
+                    View Resume
                   </a>
                 </div>
                 {animate && (
