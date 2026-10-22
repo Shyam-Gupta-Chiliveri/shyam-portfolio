@@ -9,7 +9,7 @@ export type Education = {
 export const education: Education[] = [
   {
     degree: "IT Specialist, Data Science & Artificial Intelligence (ongoing)",
-    school: "WBS Coding School · Online · 2,400 hrs",
+    school: "WBS Coding School",
     period: "May 2026 – May 2027",
     detail: "Azure, ML, Deep Learning, RAG and Big Data analytics. Certificates: Azure DP-900, PCEP Python, Scikit-learn Associate Practitioner.",
   },

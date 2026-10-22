@@ -318,9 +318,9 @@ export default function Hero({ counts }: { counts: FrameCounts }) {
                   Shyam Sunder Chiliveri
                 </h1>
                 <p className="mt-5 text-xl font-medium text-neutral-100">
-                  Data Scientist
-                  <br />
                   AI Engineer
+                  <br />
+                  Data Scientist
                 </p>
                 <p className="mt-4 max-w-md text-base leading-relaxed text-neutral-300">{profile.intro}</p>
                 <div className="mt-8 flex flex-wrap gap-3">

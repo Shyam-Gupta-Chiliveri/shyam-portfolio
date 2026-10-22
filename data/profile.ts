@@ -2,15 +2,15 @@ export const profile = {
   name: "Shyam Sunder Chiliveri",
   firstName: "Shyam",
   /** Title as on the resume. */
-  title: "Data Scientist / AI Engineer",
-  titleLines: ["Data Scientist", "AI Engineer"],
-  headline: "Data Scientist · AI Engineer · Agentic AI · GenAI",
+  title: "AI Engineer / Data Scientist",
+  titleLines: ["AI Engineer", "Data Scientist"],
+  headline: "AI Engineer · Data Scientist · Agentic AI · GenAI",
   tagline: "I bridge the gap between science and artificial intelligence.",
   /** Hero one-liner — from the resume summary. */
   intro:
     "Specialised in Agentic AI, RAG, time-series forecasting (LSTM, XGBoost) and deep learning. Production-ready in Python, PyTorch and LangChain.",
   description:
-    "Data Scientist & AI Engineer specialising in Agentic AI, RAG, LLM agents, semantic digital twins, time-series forecasting and deep learning. 7+ years of experience with project work for BMW, Tesla and Daimler. Open to Data Science, AI Engineering, GenAI and Data Analyst roles.",
+    "AI Engineer & Data Scientist specialising in Agentic AI, RAG, LLM agents, semantic digital twins, time-series forecasting and deep learning. 7+ years of experience with project work for BMW, Tesla and Daimler. Open to Data Science, AI Engineering, GenAI and Data Analyst roles.",
   status: "Open to new roles",
   location: "Halver, Germany",
   address: "Von-Vincke-Straße 6, 58553 Halver",
@@ -26,9 +26,9 @@ export const profile = {
 
   /** About section — mindset, approach, results. */
   about: [
-    "I'm a Data Scientist and AI Engineer. I start from the decision someone has to make, not from the model. I have an M.Sc. in Materials Technology from TU Bergakademie Freiberg, I am training at WBS Coding School, and I have 7+ years across ML pipelines, agentic AI, RAG and semantic digital twins, including project work for BMW, Tesla and Daimler. That is where science, data and production actually meet.",
+    "I'm an AI Engineer and Data Scientist. I start from the decision someone has to make, not from the model. I have an M.Sc. in Materials Technology from TU Bergakademie Freiberg, I am training at WBS Coding School, and I have 7+ years across ML pipelines, agentic AI, RAG and semantic digital twins, including project work for BMW, Tesla and Daimler. That is where science, data and production actually meet.",
     "My approach is simple. I frame the problem, decide what can be measured, then build the smallest thing that answers it. Sometimes that is a RAG system over ISO/DIN standards, sometimes a time-series forecast on plant data, sometimes a digital twin of a fracture surface. I work in Python, PyTorch and LangChain, and I stay close to the people who will use the result. Iterate, test, ship.",
-    "I want results someone can act on: a clear cause, a next step, something an engineer or a CEO can take into a meeting. A critic agent on a case, SHAP on a materials model, a live dashboard instead of a slide. I'm open to Data Scientist, AI Engineer, GenAI or Data Analyst roles in Germany or remote.",
+    "I want results someone can act on: a clear cause, a next step, something an engineer or a CEO can take into a meeting. A critic agent on a case, SHAP on a materials model, a live dashboard instead of a slide. I'm open to AI Engineer, Data Scientist, GenAI or Data Analyst roles in Germany or remote.",
   ],
 
   softSkills: [
