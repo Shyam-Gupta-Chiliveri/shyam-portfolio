@@ -97,9 +97,6 @@ export default function Nav() {
             <a href={`mailto:${profile.email}`} className="rounded-full bg-ink px-5 py-2.5 text-sm font-medium text-white">
               Talk to Me
             </a>
-            <a href={profile.resume} target="_blank" rel="noopener noreferrer" className="rounded-full border border-line px-5 py-2.5 text-sm font-medium text-ink">
-              View Resume
-            </a>
           </li>
         </ul>
       </div>

@@ -331,15 +331,6 @@ export default function Hero({ counts }: { counts: FrameCounts }) {
                   >
                     Talk to Me
                   </a>
-                  <a
-                    href={profile.resume}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={stop}
-                    className="glass rounded-full px-6 py-3 text-sm font-medium text-white transition hover:bg-white/20"
-                  >
-                    View Resume
-                  </a>
                 </div>
                 {animate && (
                   <p className="mt-6 hidden text-xs uppercase tracking-[0.2em] text-neutral-300 lg:block">
