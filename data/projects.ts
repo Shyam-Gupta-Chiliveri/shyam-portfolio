@@ -13,7 +13,7 @@ export type Project = {
   demo?: string;
   extraLinks?: { label: string; href: string }[];
   badge?: "Live" | "Flagship";
-  /** When true, this project leads its group inside the active category filter. */
+  /** Published default. A pin click in the browser can override this for that visitor. */
   pinned?: boolean;
   /** Present only for the detailed case studies. */
   caseStudy?: { problem: string; approach: string; result: string };
