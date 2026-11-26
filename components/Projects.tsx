@@ -299,6 +299,8 @@ export default function Projects() {
   const [dragging, setDragging] = useState<string | null>(null);
   const [dropTarget, setDropTarget] = useState<{ slug: string; after: boolean } | null>(null);
   const draggingRef = useRef<string | null>(null);
+  const pointerYRef = useRef<number | null>(null);
+  const stopScrollRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     setOverrides(readPinOverrides());
@@ -306,13 +308,66 @@ export default function Projects() {
   }, []);
 
   useEffect(() => {
-    if (!dragging) return;
-    const previous = document.body.style.cursor;
+    return () => stopScrollRef.current?.();
+  }, []);
+
+  function stopAutoScroll() {
+    stopScrollRef.current?.();
+    stopScrollRef.current = null;
+  }
+
+  function startAutoScroll() {
+    stopAutoScroll();
+    const previousCursor = document.body.style.cursor;
+    const root = document.documentElement;
+    const previousBehavior = root.style.scrollBehavior;
     document.body.style.cursor = "grabbing";
-    return () => {
-      document.body.style.cursor = previous;
+    root.style.scrollBehavior = "auto";
+    const edge = 110;
+    const maxSpeed = 28;
+    let frame = 0;
+    let last = 0;
+
+    const deltaFor = (y: number) => {
+      const height = window.innerHeight;
+      if (y < edge) return -Math.max(1, Math.ceil(((edge - y) / edge) * maxSpeed));
+      if (y > height - edge) return Math.max(1, Math.ceil(((y - (height - edge)) / edge) * maxSpeed));
+      return 0;
     };
-  }, [dragging]);
+
+    const apply = (now: number) => {
+      const y = pointerYRef.current;
+      if (y == null || !draggingRef.current) return false;
+      const delta = deltaFor(y);
+      if (!delta) return false;
+      const elapsed = last ? Math.min(48, now - last) : 16;
+      last = now;
+      root.scrollTop += delta * (elapsed / 16);
+      return true;
+    };
+
+    const tick = (now: number) => {
+      frame = 0;
+      if (!apply(now)) return;
+      frame = requestAnimationFrame(tick);
+    };
+
+    const onDragOver = (event: globalThis.DragEvent) => {
+      if (!draggingRef.current) return;
+      pointerYRef.current = event.clientY;
+      apply(performance.now());
+      if (!frame) frame = requestAnimationFrame(tick);
+    };
+
+    document.addEventListener("dragover", onDragOver, true);
+    stopScrollRef.current = () => {
+      document.removeEventListener("dragover", onDragOver, true);
+      if (frame) cancelAnimationFrame(frame);
+      pointerYRef.current = null;
+      document.body.style.cursor = previousCursor;
+      root.style.scrollBehavior = previousBehavior;
+    };
+  }
 
   function togglePin(slug: string) {
     setOverrides((prev) => {
@@ -329,6 +384,7 @@ export default function Projects() {
 
   function clearDrag() {
     draggingRef.current = null;
+    stopAutoScroll();
     setDragging(null);
     setDropTarget(null);
   }
@@ -340,6 +396,7 @@ export default function Projects() {
     if (card) event.dataTransfer.setDragImage(card, 28, 28);
     draggingRef.current = slug;
     setDragging(slug);
+    startAutoScroll();
   }
 
   function onCardDragOver(event: DragEvent<HTMLElement>, slug: string) {
