@@ -7,6 +7,29 @@ import Section from "./Section";
 
 type Filter = "All" | Category;
 
+function PinMark() {
+  return (
+    <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-wine-soft px-2.5 py-1 text-[11px] font-medium text-wine">
+      <svg viewBox="0 0 24 24" aria-hidden="true" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 17v5" />
+        <path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z" />
+      </svg>
+      Pinned
+    </span>
+  );
+}
+
+/** Pinned projects first, each group keeping its current relative order. */
+function withPinnedFirst(list: Project[]): Project[] {
+  const pinned: Project[] = [];
+  const rest: Project[] = [];
+  for (const project of list) {
+    if (project.pinned) pinned.push(project);
+    else rest.push(project);
+  }
+  return [...pinned, ...rest];
+}
+
 function Links({ p }: { p: Project }) {
   return (
     <div className="mt-auto flex flex-wrap gap-3 pt-5">
@@ -39,10 +62,15 @@ function CaseStudy({ p, index }: { p: Project; index: number }) {
           <h3 className="mt-1.5 text-[1.35rem] font-semibold tracking-tight text-ink">{p.title}</h3>
           <p className="mt-1 text-[14px] text-wine">{p.subtitle}</p>
         </div>
-        {p.badge === "Live" && (
-          <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-wine-soft px-2.5 py-1 text-[11px] font-medium text-wine">
-            <span className="h-1.5 w-1.5 rounded-full bg-wine" /> Live
-          </span>
+        {(p.pinned || p.badge === "Live") && (
+          <div className="flex shrink-0 flex-wrap items-center justify-end gap-1.5">
+            {p.pinned && <PinMark />}
+            {p.badge === "Live" && (
+              <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-wine-soft px-2.5 py-1 text-[11px] font-medium text-wine">
+                <span className="h-1.5 w-1.5 rounded-full bg-wine" /> Live
+              </span>
+            )}
+          </div>
         )}
       </div>
       <dl className="mt-6 space-y-4">
@@ -70,7 +98,14 @@ function CaseStudy({ p, index }: { p: Project; index: number }) {
 function Card({ p, index }: { p: Project; index: number }) {
   return (
     <Reveal as="article" delay={(index % 3) * 60} className="card flex h-full flex-col p-6">
-      <p className="text-[12px] font-medium text-wine">{p.category}</p>
+      {p.pinned ? (
+        <div className="flex items-start justify-between gap-3">
+          <p className="text-[12px] font-medium text-wine">{p.category}</p>
+          <PinMark />
+        </div>
+      ) : (
+        <p className="text-[12px] font-medium text-wine">{p.category}</p>
+      )}
       <h3 className="mt-2 text-[17px] font-semibold leading-snug text-ink">{p.title}</h3>
       <p className="mt-1 text-[13px] text-muted">{p.subtitle}</p>
       <p className="mt-3 flex-1 text-[14px] leading-relaxed text-body">{p.summary}</p>
@@ -90,7 +125,7 @@ export default function Projects() {
   const [filter, setFilter] = useState<Filter>("All");
 
   const { studies, others, counts } = useMemo(() => {
-    const visible = filter === "All" ? projects : projects.filter((p) => p.category === filter);
+    const visible = withPinnedFirst(filter === "All" ? projects : projects.filter((p) => p.category === filter));
     const counts = Object.fromEntries(categories.map((c) => [c, projects.filter((p) => p.category === c).length])) as Record<
       Category,
       number

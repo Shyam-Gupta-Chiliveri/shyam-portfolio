@@ -13,6 +13,8 @@ export type Project = {
   demo?: string;
   extraLinks?: { label: string; href: string }[];
   badge?: "Live" | "Flagship";
+  /** When true, this project leads its group inside the active category filter. */
+  pinned?: boolean;
   /** Present only for the detailed case studies. */
   caseStudy?: { problem: string; approach: string; result: string };
 };
@@ -24,6 +26,7 @@ export const projects: Project[] = [
     subtitle: "Agentic AI for OECD transfer-pricing retrieval and TNMM testing",
     category: "Agentic AI",
     badge: "Live",
+    pinned: true,
     summary:
       "Portfolio desk that walks a controlled group from function to file: characterisation, method choice, comparable screening, the statutory range, a transaction matrix, and a critic that keeps a paragraph off the page unless it was retrieved. Docker app with English and German. Not tax advice and not a client engagement.",
     metrics: ["45/45 citation accuracy", "94% screening F1", "612 ledger bookings", "Live desk"],
