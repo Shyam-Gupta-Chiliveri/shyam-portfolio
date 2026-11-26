@@ -1,14 +1,16 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type DragEvent } from "react";
 import { categories, projects, type Category, type Project } from "@/data/projects";
 import Reveal from "./Reveal";
 import Section from "./Section";
 
 type Filter = "All" | Category;
 type PinOverrides = Record<string, boolean>;
+type DropHint = "before" | "after" | null;
 
 const PIN_STORAGE_KEY = "portfolio-project-pins";
+const ORDER_STORAGE_KEY = "portfolio-project-order";
 
 function readPinOverrides(): PinOverrides {
   try {
@@ -34,9 +36,80 @@ function writePinOverrides(overrides: PinOverrides) {
   }
 }
 
+function readOrder(): string[] | null {
+  try {
+    const raw = localStorage.getItem(ORDER_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed: unknown = JSON.parse(raw);
+    if (!Array.isArray(parsed) || parsed.some((slug) => typeof slug !== "string")) return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function writeOrder(order: string[]) {
+  try {
+    localStorage.setItem(ORDER_STORAGE_KEY, JSON.stringify(order));
+  } catch {
+    // A blocked storage write should still update the page for this visit.
+  }
+}
+
 function isPinned(project: Project, overrides: PinOverrides) {
   if (Object.prototype.hasOwnProperty.call(overrides, project.slug)) return overrides[project.slug];
   return project.pinned === true;
+}
+
+/** Published order: pinned projects first, then the current file order inside each group. */
+function publishedOrder(list: Project[], overrides: PinOverrides) {
+  const pinned: Project[] = [];
+  const rest: Project[] = [];
+  for (const project of list) {
+    if (isPinned(project, overrides)) pinned.push(project);
+    else rest.push(project);
+  }
+  return [...pinned, ...rest.filter((project) => project.caseStudy), ...rest.filter((project) => !project.caseStudy)];
+}
+
+function knownOrder(order: string[] | null, overrides: PinOverrides) {
+  const slugs = new Set(projects.map((project) => project.slug));
+  const base = (order ?? publishedOrder(projects, overrides).map((project) => project.slug)).filter((slug) => slugs.has(slug));
+  const seen = new Set(base);
+  for (const project of projects) {
+    if (!seen.has(project.slug)) base.push(project.slug);
+  }
+  return base;
+}
+
+function orderedVisible(filter: Filter, overrides: PinOverrides, order: string[] | null) {
+  const pool = filter === "All" ? projects : projects.filter((project) => project.category === filter);
+  if (!order) return publishedOrder(pool, overrides);
+  const rank = new Map(knownOrder(order, overrides).map((slug, index) => [slug, index]));
+  return [...pool].sort((a, b) => (rank.get(a.slug) ?? 1e9) - (rank.get(b.slug) ?? 1e9));
+}
+
+function reorderSlugs(slugs: string[], from: string, to: string, after: boolean) {
+  if (from === to) return slugs;
+  const next = slugs.filter((slug) => slug !== from);
+  let index = next.indexOf(to);
+  if (index < 0) return slugs;
+  if (after) index += 1;
+  next.splice(index, 0, from);
+  return next;
+}
+
+function stitchOrder(full: string[], visible: string[], nextVisible: string[]) {
+  const visibleSet = new Set(visible);
+  let index = 0;
+  return full.map((slug) => (visibleSet.has(slug) ? nextVisible[index++] : slug));
+}
+
+function dropSide(event: DragEvent<HTMLElement>): boolean {
+  const rect = event.currentTarget.getBoundingClientRect();
+  const relX = rect.width ? (event.clientX - rect.left) / rect.width : 0.5;
+  const relY = rect.height ? (event.clientY - rect.top) / rect.height : 0.5;
+  return Math.abs(relY - 0.5) >= Math.abs(relX - 0.5) ? relY > 0.5 : relX > 0.5;
 }
 
 function PinIcon() {
@@ -45,6 +118,36 @@ function PinIcon() {
       <path d="M12 17v5" />
       <path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z" />
     </svg>
+  );
+}
+
+function GripIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" className="h-3.5 w-3.5" fill="currentColor">
+      <circle cx="9" cy="6.5" r="1.15" />
+      <circle cx="15" cy="6.5" r="1.15" />
+      <circle cx="9" cy="12" r="1.15" />
+      <circle cx="15" cy="12" r="1.15" />
+      <circle cx="9" cy="17.5" r="1.15" />
+      <circle cx="15" cy="17.5" r="1.15" />
+    </svg>
+  );
+}
+
+function DragHandle({ title, onDragStart, onDragEnd }: { title: string; onDragStart: (event: DragEvent<HTMLElement>) => void; onDragEnd: () => void }) {
+  return (
+    <span
+      role="button"
+      tabIndex={-1}
+      draggable
+      aria-label={`Drag to reorder ${title}`}
+      title="Drag to reorder"
+      onDragStart={onDragStart}
+      onDragEnd={onDragEnd}
+      className="inline-flex shrink-0 cursor-grab items-center justify-center rounded-full border border-line bg-white px-2 py-1 text-muted select-none hover:border-wine/30 hover:text-wine active:cursor-grabbing"
+    >
+      <GripIcon />
+    </span>
   );
 }
 
@@ -87,10 +190,30 @@ function Links({ p }: { p: Project }) {
   );
 }
 
-function CaseStudy({ p, index, pinned, onToggle }: { p: Project; index: number; pinned: boolean; onToggle: () => void }) {
+type MoveProps = {
+  source: boolean;
+  hint: DropHint;
+  onHandleDragStart: (event: DragEvent<HTMLElement>) => void;
+  onHandleDragEnd: () => void;
+  onCardDragOver: (event: DragEvent<HTMLElement>) => void;
+  onCardDrop: (event: DragEvent<HTMLElement>) => void;
+};
+
+function cardClass(source: boolean, hint: DropHint) {
+  return `${source ? "opacity-60" : ""} ${hint ? "outline outline-2 outline-wine/40" : ""}`;
+}
+
+function CaseStudy({ p, index, pinned, onToggle, drag }: { p: Project; index: number; pinned: boolean; onToggle: () => void; drag: MoveProps }) {
   const cs = p.caseStudy!;
   return (
-    <Reveal as="article" delay={(index % 3) * 70} className="card flex h-full flex-col p-7">
+    <Reveal
+      as="article"
+      data-slug={p.slug}
+      delay={(index % 3) * 70}
+      onDragOver={drag.onCardDragOver}
+      onDrop={drag.onCardDrop}
+      className={`card flex h-full flex-col p-7 ${cardClass(drag.source, drag.hint)}`}
+    >
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-wine">{p.category}</p>
@@ -98,6 +221,7 @@ function CaseStudy({ p, index, pinned, onToggle }: { p: Project; index: number; 
           <p className="mt-1 text-[14px] text-wine">{p.subtitle}</p>
         </div>
         <div className="flex shrink-0 flex-wrap items-center justify-end gap-1.5">
+          <DragHandle title={p.title} onDragStart={drag.onHandleDragStart} onDragEnd={drag.onHandleDragEnd} />
           <PinButton pinned={pinned} title={p.title} onToggle={onToggle} />
           {p.badge === "Live" && (
             <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-wine-soft px-2.5 py-1 text-[11px] font-medium text-wine">
@@ -128,12 +252,22 @@ function CaseStudy({ p, index, pinned, onToggle }: { p: Project; index: number; 
   );
 }
 
-function Card({ p, index, pinned, onToggle }: { p: Project; index: number; pinned: boolean; onToggle: () => void }) {
+function Card({ p, index, pinned, onToggle, drag }: { p: Project; index: number; pinned: boolean; onToggle: () => void; drag: MoveProps }) {
   return (
-    <Reveal as="article" delay={(index % 3) * 60} className="card flex h-full flex-col p-6">
+    <Reveal
+      as="article"
+      data-slug={p.slug}
+      delay={(index % 3) * 60}
+      onDragOver={drag.onCardDragOver}
+      onDrop={drag.onCardDrop}
+      className={`card flex h-full flex-col p-6 ${cardClass(drag.source, drag.hint)}`}
+    >
       <div className="flex items-start justify-between gap-3">
         <p className="text-[12px] font-medium text-wine">{p.category}</p>
-        <PinButton pinned={pinned} title={p.title} onToggle={onToggle} />
+        <div className="flex shrink-0 items-center gap-1.5">
+          <DragHandle title={p.title} onDragStart={drag.onHandleDragStart} onDragEnd={drag.onHandleDragEnd} />
+          <PinButton pinned={pinned} title={p.title} onToggle={onToggle} />
+        </div>
       </div>
       <h3 className="mt-2 text-[17px] font-semibold leading-snug text-ink">{p.title}</h3>
       <p className="mt-1 text-[13px] text-muted">{p.subtitle}</p>
@@ -150,21 +284,35 @@ function Card({ p, index, pinned, onToggle }: { p: Project; index: number; pinne
   );
 }
 
-function ProjectBlock({ p, index, pinned, onToggle }: { p: Project; index: number; pinned: boolean; onToggle: () => void }) {
+function ProjectBlock({ p, index, pinned, onToggle, drag }: { p: Project; index: number; pinned: boolean; onToggle: () => void; drag: MoveProps }) {
   return p.caseStudy ? (
-    <CaseStudy p={p} index={index} pinned={pinned} onToggle={onToggle} />
+    <CaseStudy p={p} index={index} pinned={pinned} onToggle={onToggle} drag={drag} />
   ) : (
-    <Card p={p} index={index} pinned={pinned} onToggle={onToggle} />
+    <Card p={p} index={index} pinned={pinned} onToggle={onToggle} drag={drag} />
   );
 }
 
 export default function Projects() {
   const [filter, setFilter] = useState<Filter>("All");
   const [overrides, setOverrides] = useState<PinOverrides>({});
+  const [order, setOrder] = useState<string[] | null>(null);
+  const [dragging, setDragging] = useState<string | null>(null);
+  const [dropTarget, setDropTarget] = useState<{ slug: string; after: boolean } | null>(null);
+  const draggingRef = useRef<string | null>(null);
 
   useEffect(() => {
     setOverrides(readPinOverrides());
+    setOrder(readOrder());
   }, []);
+
+  useEffect(() => {
+    if (!dragging) return;
+    const previous = document.body.style.cursor;
+    document.body.style.cursor = "grabbing";
+    return () => {
+      document.body.style.cursor = previous;
+    };
+  }, [dragging]);
 
   function togglePin(slug: string) {
     setOverrides((prev) => {
@@ -179,34 +327,65 @@ export default function Projects() {
     });
   }
 
-  const { leading, studies, others, counts } = useMemo(() => {
-    const visible = filter === "All" ? projects : projects.filter((p) => p.category === filter);
-    const pinned: Project[] = [];
-    const rest: Project[] = [];
-    for (const project of visible) {
-      if (isPinned(project, overrides)) pinned.push(project);
-      else rest.push(project);
-    }
+  function clearDrag() {
+    draggingRef.current = null;
+    setDragging(null);
+    setDropTarget(null);
+  }
+
+  function onHandleDragStart(event: DragEvent<HTMLElement>, slug: string) {
+    event.dataTransfer.setData("text/plain", slug);
+    event.dataTransfer.effectAllowed = "move";
+    const card = event.currentTarget.closest("article");
+    if (card) event.dataTransfer.setDragImage(card, 28, 28);
+    draggingRef.current = slug;
+    setDragging(slug);
+  }
+
+  function onCardDragOver(event: DragEvent<HTMLElement>, slug: string) {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "move";
+    const after = dropSide(event);
+    setDropTarget((current) => (current?.slug === slug && current.after === after ? current : { slug, after }));
+  }
+
+  function onCardDrop(event: DragEvent<HTMLElement>, slug: string) {
+    event.preventDefault();
+    const from = event.dataTransfer.getData("text/plain") || draggingRef.current;
+    const after = dropSide(event);
+    clearDrag();
+    if (!from || from === slug) return;
+    setOrder((prev) => {
+      const base = knownOrder(prev, overrides);
+      const visible = orderedVisible(filter, overrides, prev).map((project) => project.slug);
+      const nextVisible = reorderSlugs(visible, from, slug, after);
+      const next = stitchOrder(base, visible, nextVisible);
+      writeOrder(next);
+      return next;
+    });
+  }
+
+  const { items, counts } = useMemo(() => {
     const counts = Object.fromEntries(categories.map((c) => [c, projects.filter((p) => p.category === c).length])) as Record<
       Category,
       number
     >;
-    const pinnedAreCaseStudies = pinned.every((p) => p.caseStudy);
-    if (pinnedAreCaseStudies) {
-      return {
-        leading: [] as Project[],
-        studies: [...pinned, ...rest.filter((p) => p.caseStudy)],
-        others: rest.filter((p) => !p.caseStudy),
-        counts,
-      };
+    return { items: orderedVisible(filter, overrides, order), counts };
+  }, [filter, overrides, order]);
+
+  const runs = useMemo(() => {
+    const grouped: { kind: "study" | "card"; items: Project[] }[] = [];
+    for (const project of items) {
+      const kind = project.caseStudy ? "study" : "card";
+      const last = grouped[grouped.length - 1];
+      if (last?.kind === kind) last.items.push(project);
+      else grouped.push({ kind, items: [project] });
     }
-    return {
-      leading: pinned,
-      studies: rest.filter((p) => p.caseStudy),
-      others: rest.filter((p) => !p.caseStudy),
-      counts,
-    };
-  }, [filter, overrides]);
+    return grouped;
+  }, [items]);
+
+  let seenStudy = false;
+  let showedMore = false;
 
   return (
     <Section
@@ -236,32 +415,36 @@ export default function Projects() {
         })}
       </Reveal>
 
-      {leading.length > 0 && (
-        <div className="grid gap-5 lg:grid-cols-2">
-          {leading.map((p, i) => (
-            <ProjectBlock key={p.slug} p={p} index={i} pinned onToggle={() => togglePin(p.slug)} />
-          ))}
-        </div>
-      )}
-
-      {studies.length > 0 && (
-        <div className={`grid gap-5 lg:grid-cols-2 ${leading.length ? "mt-5" : ""}`}>
-          {studies.map((p, i) => (
-            <CaseStudy key={p.slug} p={p} index={i} pinned={isPinned(p, overrides)} onToggle={() => togglePin(p.slug)} />
-          ))}
-        </div>
-      )}
-
-      {others.length > 0 && (
-        <div className={studies.length || leading.length ? "mt-14" : ""}>
-          <p className="eyebrow mb-5">More projects</p>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {others.map((p, i) => (
-              <Card key={p.slug} p={p} index={i} pinned={isPinned(p, overrides)} onToggle={() => togglePin(p.slug)} />
-            ))}
+      {runs.map((run, runIndex) => {
+        const showMore = run.kind === "card" && seenStudy && !showedMore;
+        if (run.kind === "study") seenStudy = true;
+        if (showMore) showedMore = true;
+        const leadingCards = run.kind === "card" && runIndex === 0 && runs.some((item) => item.kind === "study");
+        return (
+          <div key={`${run.kind}-${run.items[0]?.slug ?? runIndex}`} className={showMore ? "mt-14" : runIndex === 0 ? "" : "mt-5"}>
+            {showMore && <p className="eyebrow mb-5">More projects</p>}
+            <div className={run.kind === "study" || leadingCards ? "grid gap-5 lg:grid-cols-2" : "grid gap-4 sm:grid-cols-2 lg:grid-cols-3"}>
+              {run.items.map((project, index) => (
+                <ProjectBlock
+                  key={project.slug}
+                  p={project}
+                  index={index}
+                  pinned={isPinned(project, overrides)}
+                  onToggle={() => togglePin(project.slug)}
+                  drag={{
+                    source: dragging === project.slug,
+                    hint: dropTarget?.slug === project.slug && dragging && dragging !== project.slug ? (dropTarget.after ? "after" : "before") : null,
+                    onHandleDragStart: (event) => onHandleDragStart(event, project.slug),
+                    onHandleDragEnd: clearDrag,
+                    onCardDragOver: (event) => onCardDragOver(event, project.slug),
+                    onCardDrop: (event) => onCardDrop(event, project.slug),
+                  }}
+                />
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })}
     </Section>
   );
 }
